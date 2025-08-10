@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>利用時間と料金計算</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { margin: 10px 5px; }
+  </style>
+</head>
+<body>
+  <h2>利用時間と料金の計算フォーム</h2>
+  <label for="entry">入場時間:</label>
+  <input type="time" id="entry"><br>
+
+  <label for="exit">退場時間:</label>
+  <input type="time" id="exit"><br>
+
+  <button onclick="calculate()">決定</button>
+  <button onclick="clearForm()">クリア</button>
+
+  <p id="duration"></p>
+  <p id="fee"></p>
+
+  <script>
+    function calculate() {
+      const entryTime = document.getElementById('entry').value;
+      const exitTime = document.getElementById('exit').value;
+
+      if (!entryTime || !exitTime) {
+        document.getElementById('duration').textContent = '両方の時間を入力してください。';
+        document.getElementById('fee').textContent = '';
+        return;
+      }
+
+      const entry = new Date(`1970-01-01T${entryTime}:00`);
+      const exit = new Date(`1970-01-01T${exitTime}:00`);
+
+      let diff = (exit - entry) / 60000;
+      if (diff < 0) {
+        diff += 24 * 60;
+      }
+
+      // 15分単位に切り上げ
+      const rounded = Math.ceil(diff / 15) * 15;
+      const hours = Math.floor(rounded / 60);
+      const minutes = rounded % 60;
+
+      document.getElementById('duration').textContent = `利用時間は ${hours} 時間 ${minutes} 分（${rounded} 分）です。`;
+
+      // 料金計算
+      let fee = 0;
+      if (diff <= 5) {
+        fee = 100;
+      } else {
+        const units = Math.ceil(diff / 15);
+        fee = units * 100;
+      }
+
+      document.getElementById('fee').textContent = `料金は ${fee} 円です。`;
+    }
+
+    function clearForm() {
+      document.getElementById('entry').value = '';
+      document.getElementById('exit').value = '';
+      document.getElementById('duration').textContent = '';
+      document.getElementById('fee').textContent = '';
+    }
+  </script>
+</body>
+</html>
